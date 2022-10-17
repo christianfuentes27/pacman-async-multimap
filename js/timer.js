@@ -16,7 +16,7 @@ timer = {
         }
 
         finish() {
-            if (this.play.checkLose()) clearInterval(this.interval);
+            if (this.play.checkLose() || this.play.getStop()) clearInterval(this.interval);
         }
     }
 }

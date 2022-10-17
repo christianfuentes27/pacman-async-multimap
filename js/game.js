@@ -6,17 +6,37 @@ game = {
             this.lose = document.getElementById('lose');
             this.btn = document.querySelector('.btn');
             this.contentBoard = null;
+            this.stop = false;
 
+            //Main map
             this.pacmanX = 2;
             this.pacmanY = 8;
+
+            //Up map
+            // this.pacmanX = 4;
+            // this.pacmanY = 4;
+
+            //Down map
+            // this.pacmanX = 2;
+            // this.pacmanY = 8;
 
             this.ghost1X = 0;
             this.ghost1Y = 0;
 
+            //Main map
             this.ghost2X = 8;
             this.ghost2Y = 17;
-            this.contentBoard = [
-                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+
+            //Up map
+            // this.ghost2X = 8;
+            // this.ghost2Y = 8;
+
+            //Down map
+            // this.ghost2X = 6;
+            // this.ghost2Y = 16;
+
+            this.mainMap = [
+                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 'T'],
                 [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0],
                 [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
                 [0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0],
@@ -24,10 +44,61 @@ game = {
                 [0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0],
                 [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
                 [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0],
-                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+                ['T', 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
             ];
+
+            this.upMap = [
+                [0, 0, 0, 0, 1, 0, 0, 0, 0],
+                [0, 1, 1, 0, 1, 0, 1, 1, 0],
+                [0, 1, 0, 0, 0, 0, 0, 1, 0],
+                [0, 1, 0, 1, 1, 1, 0, 1, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 1, 0, 1, 1, 1, 0, 1, 0],
+                [0, 1, 0, 0, 0, 0, 0, 1, 0],
+                [0, 1, 1, 0, 1, 0, 1, 1, 0],
+                ['T', 0, 0, 0, 1, 0, 0, 0, 0]
+            ];
+
+            this.downMap = [
+                [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 'T'],
+                [0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0],
+                [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+                [1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1],
+                [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
+                [0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            ];
+
+            this.maps = [this.downMap, this.mainMap, this.upMap];
+            this.currentMap = 1;
+            this.contentBoard = this.maps[this.currentMap];
+
             this.maxValueX = this.contentBoard.length - 1;
             this.maxValueY = this.contentBoard[0].length - 1;
+        }
+
+        getStop() {
+            return this.stop;
+        }
+
+        updateLimits() {
+            this.maxValueX = this.contentBoard.length - 1;
+            this.maxValueY = this.contentBoard[0].length - 1;
+        }
+
+        updatePacmanPositions() {
+            if (this.currentMap == 2) {
+                this.pacmanX = 4;
+                this.pacmanY = 4;
+            } else {
+                this.pacmanX = 2;
+                this.pacmanY = 8;
+            }
+        }
+
+        updateGhostPositions() {
+            this.ghost2X = this.maxValueX;
+            this.ghost2Y = this.maxValueY
         }
 
         renderPacman() {
@@ -67,33 +138,88 @@ game = {
             this.board.appendChild(fragment);
         }
 
+        identifyDoors() {
+            if (this.contentBoard == this.mainMap) {
+                this.board.children[0].children[this.maxValueY].setAttribute('id', 'up');
+                this.board.children[this.maxValueX].children[0].setAttribute('id', 'down');
+            }
+        }
+
+        changeMap() {
+            this.stop = true;
+            this.contentBoard = this.maps[this.currentMap];
+            this.updateLimits();
+            this.updatePacmanPositions();
+            this.updateGhostPositions();
+            this.board.textContent = '';
+            this.setMap();
+            this.render();
+        }
+
         movingPacman = (e) => {
             switch (e.key) {
                 case 'ArrowUp':
                     if (this.pacmanX != 0 && this.contentBoard[this.pacmanX - 1][this.pacmanY] == 0) {
                         this.renderRoad(this.pacmanX, this.pacmanY);
                         this.pacmanX--;
+                    } else if (this.pacmanX != 0 && this.contentBoard[this.pacmanX - 1][this.pacmanY] == 'T') {
+                        if (this.board.children[this.pacmanX - 1].children[this.pacmanY].getAttribute('id') === 'up') {
+                            this.currentMap++;
+                            this.changeMap();
+                        }
+                        else {
+                            this.currentMap--;
+                            this.changeMap();
+                        }
                     }
                     break;
                 case 'ArrowRight':
                     if (this.pacmanY != this.maxValueY && this.contentBoard[this.pacmanX][this.pacmanY + 1] == 0) {
                         this.renderRoad(this.pacmanX, this.pacmanY);
                         this.pacmanY++;
+                    } else if (this.pacmanX != 0 && this.contentBoard[this.pacmanX][this.pacmanY + 1] == 'T') {
+                        if (this.board.children[this.pacmanX].children[this.pacmanY + 1].getAttribute('id') === 'up') {
+                            this.currentMap++;
+                            this.changeMap();
+                        }
+                        else {
+                            this.currentMap--;
+                            this.changeMap();
+                        }
                     }
                     break;
                 case 'ArrowDown':
                     if (this.pacmanX != this.maxValueX && this.contentBoard[this.pacmanX + 1][this.pacmanY] == 0) {
                         this.renderRoad(this.pacmanX, this.pacmanY);
                         this.pacmanX++;
+                    } else if (this.pacmanX != 0 && this.contentBoard[this.pacmanX + 1][this.pacmanY] == 'T') {
+                        if (this.board.children[this.pacmanX + 1].children[this.pacmanY].getAttribute('id') === 'up') {
+                            this.currentMap++;
+                            this.changeMap();
+                        }
+                        else {
+                            this.currentMap--;
+                            this.changeMap();
+                        }
                     }
                     break;
                 case 'ArrowLeft':
                     if (this.pacmanY != 0 && this.contentBoard[this.pacmanX][this.pacmanY - 1] == 0) {
                         this.renderRoad(this.pacmanX, this.pacmanY);
                         this.pacmanY--;
+                    } else if (this.pacmanX != 0 && this.contentBoard[this.pacmanX][this.pacmanY - 1] == 'T') {
+                        if (this.board.children[this.pacmanX].children[this.pacmanY - 1].getAttribute('id') === 'up') {
+                            this.currentMap++;
+                            this.changeMap();
+                        }
+                        else {
+                            this.currentMap--;
+                            this.changeMap();
+                        }
                     }
                     break;
             }
+            this.renderGhosts();
             this.renderPacman();
         }
 
@@ -176,6 +302,7 @@ game = {
 
         init() {
             this.setMap();
+            this.identifyDoors();
             this.render();
             this.movePacman();
             this.restart();
