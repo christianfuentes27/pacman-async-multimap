@@ -1,0 +1,60 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+@font-face {
+    font-family: pacman;
+    src: url(pacman.ttf);
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    background-color: #222;
+    color: white;
+    font-family: pacman;
+    font-size: 18px;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.row > div {
+    padding: 10px;
+    height: 30px;
+    width: 30px;
+}
+
+.lose {
+    text-align: center;
+    margin-top: 30px;
+    display: none;
+}
+
+.btn {
+    border: 1px solid white;
+    padding: 7px 20px;
+    margin: 20px auto;
+    font-size: 12px;
+    text-align: center;
+}
+
+.btn:hover {
+    cursor: pointer;
+    background-color: white;
+    color: #222;
+}
