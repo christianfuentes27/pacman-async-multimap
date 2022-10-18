@@ -7,24 +7,6 @@ game = {
             this.btn = document.querySelector('.btn');
             this.contentBoard = null;
 
-            //Main map
-            this.pacmanX = 2;
-            this.pacmanY = 8;
-
-            this.ghost1X = 0;
-            this.ghost1Y = 0;
-
-            //Main map
-            this.ghost2X = 8;
-            this.ghost2Y = 17;
-
-            this.doorX = null;
-            this.doorY = null;
-
-            this.mainMap = null;
-            this.upMap = null;
-            this.downMap = null;
-
             this.currentMap = 1;
         }
 
@@ -168,7 +150,7 @@ game = {
                     if (this.pacmanY != this.maxValueY && this.contentBoard[this.pacmanX][this.pacmanY + 1] == 0) {
                         this.renderRoad(this.pacmanX, this.pacmanY);
                         this.pacmanY++;
-                    } else if (this.pacmanX != 0 && this.contentBoard[this.pacmanX][this.pacmanY + 1] == 'T') {
+                    } else if (this.pacmanY != this.maxValueY && this.contentBoard[this.pacmanX][this.pacmanY + 1] == 'T') {
                         if (this.board.children[this.pacmanX].children[this.pacmanY + 1].getAttribute('id') === 'up') {
                             this.currentMap++;
                             this.changeMap();
@@ -198,7 +180,7 @@ game = {
                     if (this.pacmanY != 0 && this.contentBoard[this.pacmanX][this.pacmanY - 1] == 0) {
                         this.renderRoad(this.pacmanX, this.pacmanY);
                         this.pacmanY--;
-                    } else if (this.pacmanX != 0 && this.contentBoard[this.pacmanX][this.pacmanY - 1] == 'T') {
+                    } else if (this.pacmanY != 0 && this.contentBoard[this.pacmanX][this.pacmanY - 1] == 'T') {
                         if (this.board.children[this.pacmanX].children[this.pacmanY - 1].getAttribute('id') === 'up') {
                             this.currentMap++;
                             this.changeMap();
@@ -246,10 +228,7 @@ game = {
                     break;
             }
 
-            if (this.contentBoard[x][y] === 'T') {
-                this.doorX = x;
-                this.doorY = y;
-            }
+            if (this.contentBoard[x][y] === 'T') [this.doorX, this.doorY] = [x, y];
 
             this.contentBoard[x][y] = 'A';
             return [x, y];
@@ -299,6 +278,8 @@ game = {
             this.initializeMaps();
             this.setMap();
             this.identifyDoors();
+            this.updatePacmanPositions();
+            this.updateGhostsPositions();
             this.render();
             this.movePacman();
             this.restart();
