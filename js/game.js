@@ -11,14 +11,6 @@ game = {
             this.pacmanX = 2;
             this.pacmanY = 8;
 
-            //Up map
-            // this.pacmanX = 4;
-            // this.pacmanY = 4;
-
-            //Down map
-            // this.pacmanX = 2;
-            // this.pacmanY = 8;
-
             this.ghost1X = 0;
             this.ghost1Y = 0;
 
@@ -26,14 +18,17 @@ game = {
             this.ghost2X = 8;
             this.ghost2Y = 17;
 
-            //Up map
-            // this.ghost2X = 8;
-            // this.ghost2Y = 8;
+            this.doorX = null;
+            this.doorY = null;
 
-            //Down map
-            // this.ghost2X = 6;
-            // this.ghost2Y = 16;
+            this.mainMap = null;
+            this.upMap = null;
+            this.downMap = null;
 
+            this.currentMap = 1;
+        }
+
+        initializeMaps() {
             this.mainMap = [
                 [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 'T'],
                 [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0],
@@ -67,13 +62,10 @@ game = {
                 [0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             ];
-
-            this.maps = [[...this.downMap], [...this.mainMap], [...this.upMap]];
-            this.currentMap = 1;
+            
+            this.maps = [this.downMap, this.mainMap, this.upMap];
             this.contentBoard = this.maps[this.currentMap];
-
-            this.maxValueX = this.contentBoard.length - 1;
-            this.maxValueY = this.contentBoard[0].length - 1;
+            this.updateLimits();
         }
 
         updateLimits() {
@@ -111,8 +103,12 @@ game = {
         }
 
         renderRoad(x, y) {
-            this.contentBoard[x][y] = 0;
-            this.board.children[x].children[y].innerHTML = 0;
+            let value = null;
+            if (this.doorX === x && this.doorY === y) value = 'T';
+            else value = 0;
+
+            this.contentBoard[x][y] = value;
+            this.board.children[x].children[y].innerHTML = value;
         }
 
         render() {
@@ -140,23 +136,8 @@ game = {
             this.board.children[this.maxValueX].children[0].setAttribute('id', 'down');
         }
 
-        resetMap() {
-            switch(this.currentMap) {
-                case 0:
-                    this.maps[this.currentMap] = [...this.downMap];
-                    break;
-                case 1:
-                    this.maps[this.currentMap] = [...this.mainMap];
-                    break;
-                case 2:
-                    this.maps[this.currentMap] = [...this.upMap];
-                    break;
-            }
-        }
-
         changeMap() {
-            this.resetMap();
-            this.contentBoard = this.maps[this.currentMap];
+            this.initializeMaps();
             this.updateLimits();
             this.updatePacmanPositions();
             this.updateGhostsPositions();
@@ -250,7 +231,6 @@ game = {
         moveGhosts(x, y) {
             let option = this.findPacman(x, y, this.checkOptions(x, y));
 
-            this.contentBoard[x][y] = 0;
             switch (option) {
                 case 'up':
                     x--;
@@ -264,6 +244,11 @@ game = {
                 case 'left':
                     y--;
                     break;
+            }
+
+            if (this.contentBoard[x][y] === 'T') {
+                this.doorX = x;
+                this.doorY = y;
             }
 
             this.contentBoard[x][y] = 'A';
@@ -311,6 +296,7 @@ game = {
         }
 
         init() {
+            this.initializeMaps();
             this.setMap();
             this.identifyDoors();
             this.render();
