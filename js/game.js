@@ -6,7 +6,6 @@ game = {
             this.lose = document.getElementById('lose');
             this.btn = document.querySelector('.btn');
             this.contentBoard = null;
-            this.stop = false;
 
             //Main map
             this.pacmanX = 2;
@@ -69,16 +68,12 @@ game = {
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             ];
 
-            this.maps = [this.downMap, this.mainMap, this.upMap];
+            this.maps = [[...this.downMap], [...this.mainMap], [...this.upMap]];
             this.currentMap = 1;
             this.contentBoard = this.maps[this.currentMap];
 
             this.maxValueX = this.contentBoard.length - 1;
             this.maxValueY = this.contentBoard[0].length - 1;
-        }
-
-        getStop() {
-            return this.stop;
         }
 
         updateLimits() {
@@ -96,9 +91,11 @@ game = {
             }
         }
 
-        updateGhostPositions() {
+        updateGhostsPositions() {
+            this.ghost1X = 0;
+            this.ghost1Y = 0;
             this.ghost2X = this.maxValueX;
-            this.ghost2Y = this.maxValueY
+            this.ghost2Y = this.maxValueY;
         }
 
         renderPacman() {
@@ -139,20 +136,33 @@ game = {
         }
 
         identifyDoors() {
-            if (this.contentBoard == this.mainMap) {
-                this.board.children[0].children[this.maxValueY].setAttribute('id', 'up');
-                this.board.children[this.maxValueX].children[0].setAttribute('id', 'down');
+            this.board.children[0].children[this.maxValueY].setAttribute('id', 'up');
+            this.board.children[this.maxValueX].children[0].setAttribute('id', 'down');
+        }
+
+        resetMap() {
+            switch(this.currentMap) {
+                case 0:
+                    this.maps[this.currentMap] = [...this.downMap];
+                    break;
+                case 1:
+                    this.maps[this.currentMap] = [...this.mainMap];
+                    break;
+                case 2:
+                    this.maps[this.currentMap] = [...this.upMap];
+                    break;
             }
         }
 
         changeMap() {
-            this.stop = true;
+            this.resetMap();
             this.contentBoard = this.maps[this.currentMap];
             this.updateLimits();
             this.updatePacmanPositions();
-            this.updateGhostPositions();
+            this.updateGhostsPositions();
             this.board.textContent = '';
             this.setMap();
+            this.identifyDoors();
             this.render();
         }
 
